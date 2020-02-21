@@ -12,7 +12,7 @@
 queue_t *q_new()
 {
     queue_t *q = (queue_t *) malloc(sizeof(queue_t));
-    if (q == NULL)
+    if (!q)
         return NULL;
     q->head = NULL;
     q->tail = NULL;
@@ -25,7 +25,7 @@ void q_free(queue_t *q)
 {
     list_ele_t *temp;
 
-    if (q == NULL)
+    if (!q)
         return;
 
     while (q->head != NULL) {
@@ -48,7 +48,7 @@ bool q_insert_head(queue_t *q, char *s)
 {
     list_ele_t *newh;
 
-    if (q == NULL)
+    if (!q)
         return false;
 
     newh = (list_ele_t *) malloc(sizeof(list_ele_t));
@@ -83,7 +83,7 @@ bool q_insert_tail(queue_t *q, char *s)
 {
     list_ele_t *newh;
 
-    if (q == NULL)
+    if (!q)
         return false;
 
     newh = (list_ele_t *) malloc(sizeof(list_ele_t));
@@ -120,9 +120,8 @@ bool q_insert_tail(queue_t *q, char *s)
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
     list_ele_t *temp;
-    if (q == NULL)
-        return false;
-    if (q->size == 0)
+
+    if (!q || !q->size)
         return false;
 
     if (sp) {
@@ -165,10 +164,7 @@ void q_reverse(queue_t *q)
 {
     list_ele_t *current, *new, *temp;
 
-    if (q == NULL)
-        return;
-
-    if (q->size == 0)
+    if (!q || !q->size)
         return;
 
     current = q->head;
@@ -192,10 +188,7 @@ void q_sort(queue_t *q)
 {
     list_ele_t *current, *prev, *temp;
 
-    if (q == NULL)
-        return;
-
-    if (q->size == 0)
+    if (!q || !q->size)
         return;
 
     for (int i = q->size; i > 0; i--) {
