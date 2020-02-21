@@ -184,36 +184,58 @@ void q_reverse(queue_t *q)
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
+static list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
+{
+    list_ele_t head;
+    list_ele_t *curr = &head;
+
+    while (l1 && l2) {
+        if (strcasecmp(l1->value, l2->value) >= 0) {
+            curr->next = l2;
+            curr = curr->next;
+            l2 = l2->next;
+        } else {
+            curr->next = l1;
+            curr = curr->next;
+            l1 = l1->next;
+        }
+    }
+
+    if (l1)
+        curr->next = l1;
+    if (l2)
+        curr->next = l2;
+
+    return head.next;
+}
+
+static list_ele_t *mergeSort(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    fast = slow->next;
+    slow->next = NULL;
+
+    list_ele_t *l1 = mergeSort(head);
+    list_ele_t *l2 = mergeSort(fast);
+
+    return merge(l1, l2);
+}
+
 void q_sort(queue_t *q)
 {
-    list_ele_t *current, *prev, *temp;
-
     if (!q || !q->size)
         return;
 
-    for (int i = q->size; i > 0; i--) {
-        current = q->head;
-        prev = q->head;
-        for (int j = 0; j < i - 1 && current->next; j++) {
-            if (strcasecmp(current->value, current->next->value) > 0) {
-                temp = current->next;
-                current->next = temp->next;
-                temp->next = current;
-
-                if (current == q->head) {
-                    q->head = temp;
-                    prev = temp;
-                } else {
-                    prev->next = temp;
-                    prev = prev->next;
-                }
-            } else {
-                current = current->next;
-                if (j != 0)
-                    prev = prev->next;
-            }
-        }
-    }
+    q->head = mergeSort(q->head);
 
     q->tail = q->head;
     while (q->tail->next)
